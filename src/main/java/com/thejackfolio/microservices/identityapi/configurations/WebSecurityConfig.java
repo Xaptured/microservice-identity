@@ -1,6 +1,8 @@
 package com.thejackfolio.microservices.identityapi.configurations;
 
 import com.thejackfolio.microservices.identityapi.services.CustomUserDetailsService;
+import com.thejackfolio.microservices.identityapi.utilities.PropertiesReader;
+import com.thejackfolio.microservices.identityapi.utilities.StringConstants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -21,12 +23,15 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
+    private static final String ROLE = PropertiesReader.getProperty(StringConstants.ROLE);
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, MvcRequestMatcher.Builder mvc) throws Exception {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(mvc.pattern("/identity/**")).permitAll()
+                        .requestMatchers(mvc.pattern("/actuator/**"),mvc.pattern("/")).hasRole(ROLE)
                 )
                 .build();
     }

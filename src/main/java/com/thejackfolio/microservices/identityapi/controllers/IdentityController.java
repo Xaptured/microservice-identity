@@ -5,26 +5,26 @@ import com.thejackfolio.microservices.identityapi.exceptions.DataBaseOperationEx
 import com.thejackfolio.microservices.identityapi.exceptions.MapperException;
 import com.thejackfolio.microservices.identityapi.exceptions.ValidationException;
 import com.thejackfolio.microservices.identityapi.models.ClientCredential;
-import com.thejackfolio.microservices.identityapi.models.CustomUserDetails;
 import com.thejackfolio.microservices.identityapi.services.CustomUserDetailsService;
 import com.thejackfolio.microservices.identityapi.services.IdentityService;
 import com.thejackfolio.microservices.identityapi.utilities.StringConstants;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Collection;
-import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/identity")
+@Tag(name = "Identity", description = "Identity management APIs")
 public class IdentityController {
 
     @Autowired
@@ -34,6 +34,10 @@ public class IdentityController {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+    @Operation(
+            summary = "Save credentials",
+            description = "Save credentials and gives the same credential response with a message which defines whether the request is successful or not."
+    )
     @PostMapping("/register")
     public ResponseEntity<ClientCredential> saveClientCredential(@RequestBody ClientCredential credential) {
         ClientCredential response = null;
@@ -49,6 +53,10 @@ public class IdentityController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Operation(
+            summary = "Get JWT Token",
+            description = "Get a JWT token with role name."
+    )
     @PostMapping("/token")
     public ResponseEntity<ClientCredential> generateToken(@RequestBody ClientCredential credential) {
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(credential.getEmail(), credential.getPassword()));

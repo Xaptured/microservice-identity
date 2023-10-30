@@ -12,6 +12,8 @@ public class StringConstants {
     public static final String EMAIL_NOT_PRESENT = "Email not present in Database";
     public static final String TOKEN_VALIDATED = "Token validated";
     public static final String INVALID_ACCESS = "Invalid access";
+    public static final String SECRET = "SECRET";
+    public static final String ROLE = "ROLE";
 
     private StringConstants(){}
 }
