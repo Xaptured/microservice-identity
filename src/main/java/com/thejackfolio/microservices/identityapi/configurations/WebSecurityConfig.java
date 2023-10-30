@@ -30,7 +30,7 @@ public class WebSecurityConfig {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(mvc.pattern("/identity/**")).permitAll()
+                        .requestMatchers(mvc.pattern("/identity/**"), mvc.pattern("/swagger-ui/**"), mvc.pattern("/v3/api-docs/**")).permitAll()
                         .requestMatchers(mvc.pattern("/actuator/**"),mvc.pattern("/")).hasRole(ROLE)
                 )
                 .build();
