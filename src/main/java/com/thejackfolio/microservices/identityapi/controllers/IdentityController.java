@@ -1,9 +1,11 @@
 package com.thejackfolio.microservices.identityapi.controllers;
 
+import com.thejackfolio.microservices.identityapi.enums.Role;
 import com.thejackfolio.microservices.identityapi.exceptions.DataBaseOperationException;
 import com.thejackfolio.microservices.identityapi.exceptions.MapperException;
 import com.thejackfolio.microservices.identityapi.exceptions.ValidationException;
 import com.thejackfolio.microservices.identityapi.models.ClientCredential;
+import com.thejackfolio.microservices.identityapi.models.CustomUserDetails;
 import com.thejackfolio.microservices.identityapi.services.CustomUserDetailsService;
 import com.thejackfolio.microservices.identityapi.services.IdentityService;
 import com.thejackfolio.microservices.identityapi.utilities.StringConstants;
@@ -14,8 +16,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/identity")
@@ -44,14 +50,21 @@ public class IdentityController {
     }
 
     @PostMapping("/token")
-    public ResponseEntity<String> generateToken(@RequestBody ClientCredential credential) {
+    public ResponseEntity<ClientCredential> generateToken(@RequestBody ClientCredential credential) {
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(credential.getEmail(), credential.getPassword()));
         if(authenticate.isAuthenticated()){
             final UserDetails userDetails = userDetailsService.loadUserByUsername(credential.getEmail());
             String token = service.generateToken(userDetails);
-            return ResponseEntity.status(HttpStatus.OK).body(token);
+            credential.setMessage(token);
+            String role = service.getRolesFromToken(token).get(0);
+            if(Role.fromString(role) != null){
+                credential.setRole(Role.fromString(role));
+            }
+            credential.setRole(Role.fromString(role));
+            return ResponseEntity.status(HttpStatus.OK).body(credential);
         } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(StringConstants.INVALID_ACCESS);
+            credential.setMessage(StringConstants.INVALID_ACCESS);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(credential);
         }
 
     }

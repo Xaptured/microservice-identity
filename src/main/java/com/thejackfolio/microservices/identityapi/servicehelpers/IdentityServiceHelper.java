@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class IdentityServiceHelper {
 
@@ -40,5 +42,9 @@ public class IdentityServiceHelper {
 
     public String generateToken(UserDetails userDetails) {
         return jwtUtility.generateToken(userDetails);
+    }
+
+    public List<String> getRolesFromToken(String token){
+        return jwtUtility.getRolesFromToken(token);
     }
 }

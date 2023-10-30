@@ -9,4 +9,15 @@ package com.thejackfolio.microservices.identityapi.enums;
 public enum Role {
 
     PARTICIPANT, ORGANIZER, ADMIN;
+
+    public static Role fromString(String text) {
+        if (text != null) {
+            for (Role role : Role.values()) {
+                if (text.equalsIgnoreCase(role.name())) {
+                    return role;
+                }
+            }
+        }
+        return null;
+    }
 }

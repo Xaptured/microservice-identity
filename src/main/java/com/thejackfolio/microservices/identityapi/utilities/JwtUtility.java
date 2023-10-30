@@ -1,5 +1,6 @@
 package com.thejackfolio.microservices.identityapi.utilities;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -10,10 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class JwtUtility {
@@ -47,5 +45,23 @@ public class JwtUtility {
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public List<String> getRolesFromToken(String authToken) {
+        List<String> roles = null;
+        Claims claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(authToken).getBody();
+        Boolean isParticipant = claims.get("isParticipant", Boolean.class);
+        Boolean isOrganizer = claims.get("isOrganizer", Boolean.class);
+        Boolean isAdmin = claims.get("isAdmin", Boolean.class);
+        if (isParticipant != null && isParticipant == true) {
+            roles = Arrays.asList("PARTICIPANT");
+        }
+        if (isOrganizer != null && isOrganizer == true) {
+            roles = Arrays.asList("ORGANIZER");
+        }
+        if (isAdmin != null && isAdmin == true) {
+            roles = Arrays.asList("ADMIN");
+        }
+        return roles;
     }
 }

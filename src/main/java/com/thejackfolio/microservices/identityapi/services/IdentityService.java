@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class IdentityService {
 
@@ -26,5 +28,9 @@ public class IdentityService {
 
     public String generateToken(UserDetails userDetails) {
         return helper.generateToken(userDetails);
+    }
+
+    public List<String> getRolesFromToken(String token) {
+        return helper.getRolesFromToken(token);
     }
 }
