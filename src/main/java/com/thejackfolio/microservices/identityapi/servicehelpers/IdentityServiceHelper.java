@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -37,17 +38,7 @@ public class IdentityServiceHelper {
         return responseBody;
     }
 
-    public String generateToken(String userName) {
-        return jwtUtility.generateToken(userName);
-    }
-
-    public void validateToken(String token) throws TokenException {
-        try{
-            jwtUtility.validateToken(token);
-            LOGGER.error(StringConstants.TOKEN_VALIDATED);
-        } catch (Exception exception) {
-            LOGGER.error(StringConstants.VALIDATION_ERROR_TOKEN);
-            throw new TokenException(StringConstants.VALIDATION_ERROR_TOKEN);
-        }
+    public String generateToken(UserDetails userDetails) {
+        return jwtUtility.generateToken(userDetails);
     }
 }

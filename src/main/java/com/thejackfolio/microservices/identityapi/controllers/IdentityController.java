@@ -4,6 +4,7 @@ import com.thejackfolio.microservices.identityapi.exceptions.DataBaseOperationEx
 import com.thejackfolio.microservices.identityapi.exceptions.MapperException;
 import com.thejackfolio.microservices.identityapi.exceptions.ValidationException;
 import com.thejackfolio.microservices.identityapi.models.ClientCredential;
+import com.thejackfolio.microservices.identityapi.services.CustomUserDetailsService;
 import com.thejackfolio.microservices.identityapi.services.IdentityService;
 import com.thejackfolio.microservices.identityapi.utilities.StringConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +25,8 @@ public class IdentityController {
     private IdentityService service;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
     @PostMapping("/register")
     public ResponseEntity<ClientCredential> saveClientCredential(@RequestBody ClientCredential credential) {
@@ -43,22 +47,12 @@ public class IdentityController {
     public ResponseEntity<String> generateToken(@RequestBody ClientCredential credential) {
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(credential.getEmail(), credential.getPassword()));
         if(authenticate.isAuthenticated()){
-            String token = service.generateToken(credential.getEmail());
+            final UserDetails userDetails = userDetailsService.loadUserByUsername(credential.getEmail());
+            String token = service.generateToken(userDetails);
             return ResponseEntity.status(HttpStatus.OK).body(token);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(StringConstants.INVALID_ACCESS);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(StringConstants.INVALID_ACCESS);
         }
 
     }
-
-    @GetMapping("/validate")
-    public ResponseEntity<Boolean> validateToken(@RequestParam("token") String token) {
-        try{
-            service.validateToken(token);
-        } catch (Exception exception) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(true);
-    }
-
 }
