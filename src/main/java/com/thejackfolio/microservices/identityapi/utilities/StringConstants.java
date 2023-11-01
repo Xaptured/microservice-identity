@@ -14,6 +14,7 @@ public class StringConstants {
     public static final String INVALID_ACCESS = "Invalid access";
     public static final String SECRET = "SECRET";
     public static final String ROLE = "ROLE";
+    public static final String ACCOUNT_NOT_VERIFIED = "Please verify your account";
 
     private StringConstants(){}
 }
