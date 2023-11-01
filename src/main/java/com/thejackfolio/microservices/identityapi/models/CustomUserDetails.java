@@ -14,6 +14,7 @@ public class CustomUserDetails implements UserDetails {
     private String username;
     private String password;
     private String role;
+    private boolean verified;
 
     public CustomUserDetails() {
     }
@@ -22,6 +23,7 @@ public class CustomUserDetails implements UserDetails {
         this.username = credential.getEmail();
         this.password = credential.getPassword();
         this.role = credential.getRole().toString();
+        this.verified = credential.isVerified();
     }
 
     @Override
@@ -56,6 +58,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return verified;
     }
+
 }
