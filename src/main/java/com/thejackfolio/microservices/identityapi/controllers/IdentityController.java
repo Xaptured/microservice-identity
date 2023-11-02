@@ -59,26 +59,24 @@ public class IdentityController {
     )
     @PostMapping("/token")
     public ResponseEntity<ClientCredential> generateToken(@RequestBody ClientCredential credential) {
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(credential.getEmail(), credential.getPassword()));
-        if(authenticate.isAuthenticated()){
-            final UserDetails userDetails = userDetailsService.loadUserByUsername(credential.getEmail());
-            if(userDetails.isEnabled()) {
-                String token = service.generateToken(userDetails);
-                credential.setMessage(token);
-                String role = service.getRolesFromToken(token).get(0);
-                if(Role.fromString(role) != null){
-                    credential.setRole(Role.fromString(role));
-                }
-                credential.setRole(Role.fromString(role)); // Remove this line
-                return ResponseEntity.status(HttpStatus.OK).body(credential);
+        try {
+            Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(credential.getEmail(), credential.getPassword()));
+            if (authenticate.isAuthenticated()) {
+                final UserDetails userDetails = userDetailsService.loadUserByUsername(credential.getEmail());
+                    String token = service.generateToken(userDetails);
+                    credential.setMessage(token);
+                    String role = service.getRolesFromToken(token).get(0);
+                    if (Role.fromString(role) != null) {
+                        credential.setRole(Role.fromString(role));
+                    }
+                    return ResponseEntity.status(HttpStatus.OK).body(credential);
             } else {
-                credential.setMessage(StringConstants.ACCOUNT_NOT_VERIFIED);
+                credential.setMessage(StringConstants.INVALID_ACCESS);
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(credential);
             }
-        } else {
-            credential.setMessage(StringConstants.INVALID_ACCESS);
+        } catch (Exception exception) {
+            credential.setMessage(StringConstants.ACCOUNT_NOT_VERIFIED);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(credential);
         }
-
     }
 }
