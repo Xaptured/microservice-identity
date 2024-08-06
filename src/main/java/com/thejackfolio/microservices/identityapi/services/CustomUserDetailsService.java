@@ -25,8 +25,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         UserDetails details = null;
         if(responseBody.getMessage().equals(StringConstants.DATABASE_ERROR) || responseBody.getMessage().equals(StringConstants.MAPPING_ERROR) || responseBody.getMessage().equals(StringConstants.VALIDATION_ERROR) || responseBody.getMessage().equals(StringConstants.FALLBACK_MESSAGE)){
             throw new UsernameNotFoundException(StringConstants.INTERNAL_SERVER_ERROR);
-        } else if(responseBody.getMessage().equals(StringConstants.EMAIL_NOT_PRESENT)) {
-            throw new UsernameNotFoundException(StringConstants.USER_NOT_FOUND +" "+ username);
+        } else if(responseBody.getMessage().equals(StringConstants.USERNAME_NOT_FOUND)) {
+            throw new UsernameNotFoundException(StringConstants.USER_NOT_FOUND);
         } else {
             details = new CustomUserDetails(responseBody);
         }
