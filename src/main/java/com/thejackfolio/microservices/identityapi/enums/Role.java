@@ -8,7 +8,7 @@ package com.thejackfolio.microservices.identityapi.enums;
 
 public enum Role {
 
-    PARTICIPANT, ORGANIZER, ADMIN;
+    PARTICIPANT, ORGANIZER, ADMIN, AUDIENCE;
 
     public static Role fromString(String text) {
         if (text != null) {
