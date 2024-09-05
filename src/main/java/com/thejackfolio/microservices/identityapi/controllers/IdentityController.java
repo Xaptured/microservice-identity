@@ -73,6 +73,9 @@ public class IdentityController {
                 if (Role.fromString(role) != null) {
                     credential.setRole(Role.fromString(role));
                 }
+                if (userDetails.isEnabled()) {
+                    credential.setVerified(userDetails.isEnabled());
+                }
                 return ResponseEntity.status(HttpStatus.OK).body(credential);
             } else {
                 credential.setMessage(StringConstants.INVALID_ACCESS);
